@@ -1,11 +1,21 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const  mongoose  = require('mongoose');
+const routes = require('./routes');
+const bodyParser = require('body-parser');
 dotenv.config()
 const app = express();
 const port = process.env.PORT || 3001;
-app.get('/', (req, res) =>{
-    return res.send('hello bonj nay')
+
+routes(app);
+app.use(bodyParser.json())
+mongoose.connect(`${process.env.MONGOO_DB}`)
+.then(()=>{
+    console.log('Connert Db success!')
+})
+.catch((err) => {
+console.log(err);
 })
 app.listen(port,() =>{
-    console.log(`Server is running on port ${port}`);
+    console.log('Server is running on port:'+ port);
 } )
