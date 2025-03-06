@@ -1,7 +1,8 @@
 const express = require('express');
-const router = express.Router(); // ✅ Đặt tên là `router`
+const router = express.Router();
 const userController = require('../controllers/UserController');
 
-router.post('/', userController.createUser); // ✅ Dùng `router`
+router.post('/sign-up', userController.createUser);  // Đăng ký tài khoản
+router.post('/sign-in', userController.loginUser);  // Đăng nhập
 
-module.exports = router; // ✅ Xuất `router`
+module.exports = router;
