@@ -1,5 +1,6 @@
 const User = require('../models/UserModel');
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 const { genneralAccessToken, genneralRefreshToken } = require('./jwtServices');
 const createUser = (newUser) => {  
     return new Promise( async(resolve, reject) => {
@@ -176,11 +177,12 @@ const getDetailsUser = (id) => {
     });
 }
 
+
 module.exports = {
     createUser,
     loginUser,
     updateUser,
     deleteUser,
     getAllUser,
-    getDetailsUser
+    getDetailsUser,
 };

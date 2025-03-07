@@ -26,6 +26,34 @@ const authMiddleWare = (req, res, next) => {
     });
 };
 
+const authUserMiddleWare = (req, res, next) => {
+    const authHeader = req.headers.authorization || req.headers.token;
+    if (!authHeader) {
+        return res.status(401).json({ message: 'Token is missing', status: 'ERROR' });
+    }
+
+    const token = authHeader.split(' ')[1]; // Lấy token đúng vị trí
+    if (!token) {
+        return res.status(401).json({ message: 'Invalid token format', status: 'ERROR' });
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid or expired token', status: 'ERROR' });
+        }
+
+        const { payload } = user || {}; // Tránh lỗi undefined
+        if (payload?.isAdmin || payload?.id === req.params.id) {
+            next();
+        } else {
+            return res.status(403).json({ message: 'Authentication failed', status: 'ERROR' });
+        }
+    });
+};
+
+
+
 module.exports ={
-    authMiddleWare
+    authMiddleWare,
+    authUserMiddleWare
 };
