@@ -80,8 +80,85 @@ const loginUser = async (req, res) => {
         });
     }
 };
+const updateUser = async (req, res) => {
+    try {
+        const userId = req.params.id
+        const data = req.body
+        if(!userId){
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is raaa'
+            });
+        }
+        console.log('userId:',userId)
+        const response = await UserService.updateUser(userId,data);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'ERR',
+            message: e.message || 'Internal server error'
+        });
+    }
+};
+
+const deleteUser = async (req, res) => {
+    try {
+        const userId = req.params.id
+        const token = req.headers
+        console.log('token',token)
+        if(!userId){
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is raaa'
+            });
+        }
+        const response = await UserService.deleteUser(userId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'ERR',
+            message: e.message || 'Internal server error'
+        });
+    }
+};
+
+const getAllUser = async (req, res) => {
+    try {
+        const response = await UserService.getAllUser();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'ERR',
+            message: e.message || 'Internal server error'
+        });
+    }
+};
+const getDetailsUser = async (req, res) => {
+    try {
+        const userId = req.params.id
+        if(!userId){
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is raaa'
+            });
+        }
+        const response = await UserService.getDetailsUser(userId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'ERR',
+            message: e.message || 'Internal server error'
+        });
+    }
+};
+
+
 
 module.exports = {
     createUser,
-    loginUser
+    loginUser,
+    updateUser,
+    deleteUser,
+    getAllUser,
+    getDetailsUser
 };

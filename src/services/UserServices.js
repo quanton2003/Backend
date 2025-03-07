@@ -85,7 +85,102 @@ const loginUser = (userLogin) => {
     });
 };
 
+const updateUser = (id,data) => {  
+    return new Promise( async(resolve, reject) => {
+        try {
+            const checkUser =  await User.findOne({
+                _id:id
+            })
+        if(checkUser === null){
+            resolve({
+                status: "OK",
+                message: 'Thee user is not defind'
+            })
+        }
+            const  updateUser = await User.findByIdAndUpdate(id,data,{new:true})
+            console.log('updateUser:',updateUser)
+                resolve({
+                    status: 'OK',
+                    message: 'Success',
+                    data:updateUser
+                })
+      
+        
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const deleteUser = (id) => {  
+    return new Promise( async(resolve, reject) => {
+        try {
+            const checkUser =  await User.findOne({
+                _id:id
+            })
+        if(checkUser === null){
+            resolve({
+                status: "OK",
+                message: 'Thee user is not defind'
+            })
+        }
+            await User.findByIdAndDelete(id)
+                resolve({
+                    status: 'OK',
+                    message: 'Delete User Success',
+                })
+        
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const getAllUser = () => {  
+    return new Promise( async(resolve, reject) => {
+        try {
+          const allUser =   await User.find()
+                resolve({
+                    status: 'OK',
+                    message: 'Success',
+                    data: allUser
+                })
+        
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const getDetailsUser = (id) => {  
+    return new Promise( async(resolve, reject) => {
+        try {
+            const user =  await User.findOne({
+                _id:id
+            })
+        if(user === null){
+            resolve({
+                status: "OK",
+                message: 'Thee user is not defind'
+            })
+        }
+                resolve({
+                    status: 'OK',
+                    message: 'Sucess',
+                    data:user
+                })
+        
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
 module.exports = {
     createUser,
-    loginUser
+    loginUser,
+    updateUser,
+    deleteUser,
+    getAllUser,
+    getDetailsUser
 };
