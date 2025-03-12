@@ -47,32 +47,33 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { email, password, } = req.body;
+        const { email, password } = req.body;
 
-        // Định nghĩa regex kiểm tra email hợp lệ
         const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const isCheckEmail = reg.test(email);
 
-        // Kiểm tra các input đầu vào
-        if ( !email || !password ) {
-            return res.status(200).json({
+        if (!email || !password) {
+            return res.status(400).json({  // 🔥 Đổi từ 200 → 400 (Lỗi hợp lý)
                 status: 'ERR',
                 message: 'All fields are required'
             });
         } else if (!isCheckEmail) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'ERR',
                 message: 'Invalid email format'
             });
-        } 
+        }
 
         const response = await UserService.loginUser(req.body);
-        const{refresh_token,...newResponse} = response
-    // console.log('response',response);
-       res.cookie('refresh_token',refresh_token,{
-        HttpOnly:true,
-        Secure:true
-       })
+        const { refresh_token, ...newResponse } = response;
+
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            secure: false,   // ✅ Để `false` trên localhost, lên server thì `true`
+            sameSite: 'lax', // ✅ Giúp cookie hoạt động đúng giữa frontend/backend
+            path: '/'
+        });
+
         return res.status(200).json(newResponse);
     } catch (e) {
         return res.status(500).json({
@@ -81,6 +82,7 @@ const loginUser = async (req, res) => {
         });
     }
 };
+
 const updateUser = async (req, res) => {
     try {
         const userId = req.params.id
@@ -91,7 +93,7 @@ const updateUser = async (req, res) => {
                 message: 'The userId is raaa'
             });
         }
-        console.log('userId:',userId)
+        
         const response = await UserService.updateUser(userId,data);
         return res.status(200).json(response);
     } catch (e) {
@@ -154,14 +156,17 @@ const getDetailsUser = async (req, res) => {
 };
 
 const refreshToken = async (req, res) => {
+    console.log('🔍 Tất cả cookies nhận được:', req.cookies); // Kiểm tra cookies
+
     try {
-        const token = req.cookies.refresh_token
-        if(!token){
-            return res.status(200).json({
+        const token = req.cookies.refresh_token;
+        if (!token) {
+            return res.status(401).json({  // 🔥 Đổi từ 400 → 401 (Unauthorized)
                 status: 'ERR',
                 message: 'The token is required'
             });
         }
+
         const response = await jwtServices.refreshTokenJwtService(token);
         return res.status(200).json(response);
     } catch (e) {
@@ -171,6 +176,7 @@ const refreshToken = async (req, res) => {
         });
     }
 };
+
 
 
 module.exports = {
