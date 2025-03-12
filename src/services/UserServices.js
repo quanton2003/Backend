@@ -11,7 +11,7 @@ const createUser = (newUser) => {
             })
         if(checkUser !== null){
             resolve({
-                status: "OK",
+                status: "ERR",
                 message: ['The email is already']
             })
         }
@@ -40,51 +40,57 @@ const createUser = (newUser) => {
 };
 
 
-const loginUser = (userLogin) => {  
-    return new Promise( async(resolve, reject) => {
-        const { name, email, password, confirmPassword, phone } = userLogin;
-        try {
-            const checkUser =  await User.findOne({
-             email: email
-            })
-        if(checkUser === null){
-            resolve({
-                status: "OK",
-                message: ['The user is not defined']
-            })
-        }
-        const comparePassword = bcrypt.compareSync(password,checkUser.password)
-        console.log('comparePassword: ',comparePassword)
-        
+const loginUser = async (userLogin) => {
+    try {
+        const { email, password } = userLogin;
 
-            if(!comparePassword){
-                resolve({
-                    status: "OK",
-                    message: ['The passWord or user is incorrect ']
-                })
-            }
-            const access_token =  await genneralAccessToken({
-                id: checkUser.id, 
-                isAdmin:checkUser.isAdmin
-            })
-            const refresh_token = await genneralRefreshToken({
-                id: checkUser.id, 
-                isAdmin:checkUser.isAdmin
-            })
+        // Kiểm tra user có tồn tại không
+        const checkUser = await User.findOne({ email });
 
-                resolve({
-                    status: 'OK',
-                    message: 'Success',
-                     access_token,
-                     refresh_token
-                })
-      
-        
-        } catch (e) {
-            reject(e);
+        if (!checkUser) {
+            return {
+                status: "ERR",
+                message: "The user is not defined"
+            };
         }
-    });
+
+        // Kiểm tra mật khẩu
+        const comparePassword = await bcrypt.compare(password, checkUser.password);
+
+        if (!comparePassword) {
+            return {
+                status: "ERR",
+                message: "The password or user is incorrect"
+            };
+        }
+
+        // Tạo token nếu đăng nhập thành công
+        const access_token = await genneralAccessToken({
+            id: checkUser.id,
+            isAdmin: checkUser.isAdmin
+        });
+        const refresh_token = await genneralRefreshToken({
+            id: checkUser.id,
+            isAdmin: checkUser.isAdmin
+        });
+
+        return {
+            status: "OK",
+            message: "Success",
+            access_token,
+            refresh_token
+        };
+    } catch (e) {
+        console.error("Login error:", e);
+        return {
+            status: "ERR",
+            message: "Internal server error",
+            error: e.message
+        };
+    }
 };
+
+
 
 const updateUser = (id,data) => {  
     return new Promise( async(resolve, reject) => {

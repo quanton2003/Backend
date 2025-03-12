@@ -11,7 +11,7 @@ const createUser = async (req, res) => {
         const isCheckEmail = reg.test(email);
 
         // Kiểm tra các input đầu vào
-        if (!name || !email || !password || !confirmPassword || !phone) {
+        if (!email || !password ) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'All fields are required'
@@ -47,14 +47,14 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { name, email, password, confirmPassword, phone } = req.body;
+        const { email, password, } = req.body;
 
         // Định nghĩa regex kiểm tra email hợp lệ
         const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const isCheckEmail = reg.test(email);
 
         // Kiểm tra các input đầu vào
-        if (!name || !email || !password || !confirmPassword || !phone) {
+        if ( !email || !password ) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'All fields are required'
@@ -64,16 +64,16 @@ const loginUser = async (req, res) => {
                 status: 'ERR',
                 message: 'Invalid email format'
             });
-        } else if (password !== confirmPassword) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'Passwords do not match'
-            });
-        }
+        } 
 
         const response = await UserService.loginUser(req.body);
-   
-        return res.status(200).json(response);
+        const{refresh_token,...newResponse} = response
+    // console.log('response',response);
+       res.cookie('refresh_token',refresh_token,{
+        HttpOnly:true,
+        Secure:true
+       })
+        return res.status(200).json(newResponse);
     } catch (e) {
         return res.status(500).json({
             status: 'ERR',
@@ -155,7 +155,7 @@ const getDetailsUser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
     try {
-        const token = req.headers.token.split(' ')[1]
+        const token = req.cookies.refresh_token
         if(!token){
             return res.status(200).json({
                 status: 'ERR',

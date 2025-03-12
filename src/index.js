@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const routes = require('./routes');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
@@ -11,7 +12,8 @@ const port = process.env.PORT || 3001;
 // ✅ Middleware phải đặt trước routes
 app.use(cors())
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); // Hỗ trợ dữ liệu từ form
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true })); 
 
 // Gọi routes sau khi middleware đã được đăng ký
 routes(app);

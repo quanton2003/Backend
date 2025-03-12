@@ -12,8 +12,7 @@ const authMiddleWare = (req, res, next) => {
                 status: 'ERROR'
             });
         }
-        const {payload} = user
-        if (payload?.isAdmin) {
+        if (user?.isAdmin) {
             next()
         }else{
             return res.status(404).json({
@@ -27,6 +26,7 @@ const authMiddleWare = (req, res, next) => {
 };
 
 const authUserMiddleWare = (req, res, next) => {
+    console.log('req',req.headers)
     const authHeader = req.headers.authorization || req.headers.token;
     if (!authHeader) {
         return res.status(401).json({ message: 'Token is missing', status: 'ERROR' });
@@ -42,8 +42,8 @@ const authUserMiddleWare = (req, res, next) => {
             return res.status(403).json({ message: 'Invalid or expired token', status: 'ERROR' });
         }
 
-        const { payload } = user || {}; // Tránh lỗi undefined
-        if (payload?.isAdmin || payload?.id === req.params.id) {
+     
+        if (user?.isAdmin || user?.id === req.params.id) {
             next();
         } else {
             return res.status(403).json({ message: 'Authentication failed', status: 'ERROR' });
