@@ -176,6 +176,28 @@ const refreshToken = async (req, res) => {
         });
     }
 };
+const logOutUser = async (req, res) => {
+    try {
+        res.clearCookie('refresh_token', {
+            httpOnly: true,
+            secure: false, // Nếu dùng HTTPS, đổi thành true
+            sameSite: 'strict',
+            path: '/', // Đảm bảo xóa trên toàn bộ domain
+        });
+
+        return res.status(200).json({
+            status: 'OK',
+            message: 'Logout successfully'
+        });
+    } catch (e) {
+        console.error("Logout Error:", e);
+        return res.status(500).json({
+            status: 'ERR',
+            message: e.message || "Internal Server Error"
+        });
+    }
+};
+
 
 
 
@@ -186,5 +208,6 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
-    refreshToken
+    refreshToken,
+    logOutUser
 };
