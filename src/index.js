@@ -12,8 +12,8 @@ const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(cookieParser());  // ✅ Đọc cookie trước
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // Gọi routes sau khi middleware đã được đăng ký
 routes(app);

@@ -6,7 +6,7 @@ const { authMiddleWare,authUserMiddleWare } = require("../middleware/authMiddlew
 router.post('/sign-up', userController.createUser);  // Đăng ký tài khoản
 router.post('/sign-in', userController.loginUser);  
 router.post('/log-out', userController.logOutUser); 
-router.put('/update-user/:id', userController.updateUser);
+router.put('/update-user/:id',authUserMiddleWare, userController.updateUser);
 router.delete('/delete-user/:id',authMiddleWare, userController.deleteUser);
 router.get('/getAll',authMiddleWare, userController.getAllUser);
 router.get('/get-details/:id',authUserMiddleWare, userController.getDetailsUser);

@@ -108,7 +108,7 @@ const updateUser = (id,data) => {
             console.log('updateUser:',updateUser)
                 resolve({
                     status: 'OK',
-                    message: 'Success',
+                    message: 'Success Update User',
                     data:updateUser
                 })
       
@@ -165,6 +165,7 @@ const getDetailsUser = (id) => {
             const user =  await User.findOne({
                 _id:id
             })
+            console.log('use1r',user)
         if(user === null){
             resolve({
                 status: "OK",
