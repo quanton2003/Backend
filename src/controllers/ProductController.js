@@ -28,7 +28,7 @@ const updateProduct  = async (req, res) => {
         const productId = req.params.id
         const data = req.body
         if(!productId){
-            return res.status(200).json({
+            return res.status(401).json({
                 status: 'ERR',
                 message: 'The productId is raaa'
             });
@@ -61,11 +61,35 @@ const getDetailsProduct = async (req, res) => {
         });
     }
 };
+
+
+
+const deleteManyProduct = async (req, res) => {
+    try {
+        const ids = req.body.id
+        
+        if(!ids){
+            return res.status(401).json({
+                status: 'ERR',
+                message: 'The ids is req'
+            });
+        }
+        const response = await ProductService.deleteManyProduct(ids);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'ERR',
+            message: e.message || 'Internal server error'
+        });
+    }
+};
+
+
 const deleteProduct = async (req, res) => {
     try {
         const productId = req.params.id
         if(!productId){
-            return res.status(200).json({
+            return res.status(401).json({
                 status: 'ERR',
                 message: 'The productId is raaa'
             });
@@ -94,10 +118,24 @@ const getAllProduct = async (req, res) => {
     }
 };
 
+const getAllType = async (req, res) => {
+   
+    try {
+        const response = await ProductService.getAllType();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'ERR',
+            message: e.message || 'Internal server error'
+        });
+    }
+};
 module.exports = {
     createProduct,
     updateProduct,
     getDetailsProduct,
     deleteProduct,
-    getAllProduct
+    getAllProduct,
+    deleteManyProduct,
+    getAllType
 }

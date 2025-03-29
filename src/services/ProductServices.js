@@ -17,7 +17,7 @@ const createProduct = (newProduct) => {
             })
             if (checkProduct !== null) {
                 resolve({
-                    status: "OK",
+                    status: "ERR",
                     message: ['The name of product is already']
                 })
             }
@@ -82,7 +82,7 @@ const deleteProduct = (id) => {
             })
             if (checkProduct === null) {
                 resolve({
-                    status: "OK",
+                    status: "ERR",
                     message: 'Thee Product is not defind'
                 })
             }
@@ -98,56 +98,13 @@ const deleteProduct = (id) => {
     });
 };
 
-const getAllProduct = (limit, page, sort,filter) => {
-    console.log('sort', sort);
-
+const deleteManyProduct = (ids) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const totalProduct = await Product.countDocuments()
-            if (filter && Array.isArray(filter) && filter.length === 2) {
-                const field = filter[0];  // Lấy tên trường cần filter
-                const value = filter[1];  // Lấy giá trị cần filter
-            
-                const objectFilter = {};
-                objectFilter[field] = { '$regex': value, '$options': 'i' }
-            
-                console.log("objectFilter:", objectFilter);
-            
-                const allObjectFilter = await Product.find(objectFilter).limit(limit).skip(page * limit);;
-            
-                return resolve({
-                    status: 'OK',
-                    message: 'Success',
-                    data: allObjectFilter,
-                    total: totalProduct,
-                    pageCurrent: Number(page + 1),
-                    totalPage: Math.ceil(totalProduct / limit)
-                });
-            }
-            
-            if (sort) {
-                console.log("okoke");
-                const objectSort = {}
-                objectSort[sort[1]] = sort[0]
-                console.log("objectSort",objectSort)
-                const allProductSort = await Product.find().limit(limit).skip(page * limit).sort(objectSort)
-                resolve({
-                    status: 'OK',
-                    message: 'Success',
-                    data: allProductSort,
-                    total: totalProduct,
-                    pageCurrent: Number(page + 1),
-                    totalPage: Math.ceil(totalProduct / limit)
-                })
-            }
-            const allProduct = await Product.find().limit(limit).skip(page * limit)
+            await Product.deleteMany({_id: ids})
             resolve({
                 status: 'OK',
-                message: 'Success',
-                data: allProduct,
-                total: totalProduct,
-                pageCurrent: Number(page + 1),
-                totalPage: Math.ceil(totalProduct / limit)
+                message: 'Delete Product Success',
             })
 
         } catch (e) {
@@ -155,6 +112,79 @@ const getAllProduct = (limit, page, sort,filter) => {
         }
     });
 };
+
+const getAllProduct = (limit, page, sort, filter) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const totalProduct = await Product.countDocuments();
+
+            const skip = Math.max(0, (page - 1) * limit); // Đảm bảo skip không bị âm
+
+            if (filter && Array.isArray(filter) && filter.length === 2) {
+                const objectFilter = { [filter[0]]: { '$regex': filter[1], '$options': 'i' } };
+                const allObjectFilter = await Product.find(objectFilter)
+                    .limit(limit)
+                    .skip(skip);
+                return resolve({
+                    status: 'OK',
+                    message: 'Success',
+                    data: allObjectFilter,
+                    total: totalProduct,
+                    pageCurrent: Number(page),
+                    totalPage: Math.ceil(totalProduct / limit)
+                });
+            }
+
+            if (filter && typeof filter === 'string' && filter.trim().length > 0) {
+                const objectFilter = { name: { '$regex': filter, '$options': 'i' } };
+                const allObjectFilter = await Product.find(objectFilter)
+                    .limit(limit)
+                    .skip(skip);
+                return resolve({
+                    status: 'OK',
+                    message: 'Success',
+                    data: allObjectFilter,
+                    total: totalProduct,
+                    pageCurrent: Number(page),
+                    totalPage: Math.ceil(totalProduct / limit)
+                });
+            }
+
+            if (sort) {
+                const objectSort = { [sort[1]]: sort[0] };
+                const allProductSort = await Product.find()
+                    .limit(limit)
+                    .skip(skip)
+                    .sort(objectSort);
+                return resolve({
+                    status: 'OK',
+                    message: 'Success',
+                    data: allProductSort,
+                    total: totalProduct,
+                    pageCurrent: Number(page),
+                    totalPage: Math.ceil(totalProduct / limit)
+                });
+            }
+
+            const allProduct = await Product.find()
+                .limit(limit)
+                .skip(skip);
+            resolve({
+                status: 'OK',
+                message: 'Success',
+                data: allProduct,
+                total: totalProduct,
+                pageCurrent: Number(page),
+                totalPage: Math.ceil(totalProduct / limit)
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+
+
 
 const getDetailsProduct = (id) => {
     return new Promise(async (resolve, reject) => {
@@ -180,11 +210,28 @@ const getDetailsProduct = (id) => {
     });
 }
 
+const getAllType = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const totalProduct = await Product.countDocuments();
+            const allType = await Product.distinct('type')
+            resolve({
+                status: 'OK',
+                message: 'Success',
+                data: allType,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
 
 module.exports = {
     createProduct,
     updateProduct,
     getDetailsProduct,
     deleteProduct,
-    getAllProduct
+    getAllProduct,
+    deleteManyProduct,
+    getAllType
 };

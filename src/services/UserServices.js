@@ -127,11 +127,25 @@ const deleteUser = (id) => {
             })
         if(checkUser === null){
             resolve({
-                status: "OK",
+                status: "ERR",
                 message: 'Thee user is not defind'
             })
         }
             await User.findByIdAndDelete(id)
+                resolve({
+                    status: 'OK',
+                    message: 'Delete User Success',
+                })
+        
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+const deleteManyUser = (ids) => {  
+    return new Promise( async(resolve, reject) => {
+        try {
+            await User.deleteMany({_id: ids})
                 resolve({
                     status: 'OK',
                     message: 'Delete User Success',
@@ -192,4 +206,5 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
+    deleteManyUser
 };
