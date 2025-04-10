@@ -1,5 +1,5 @@
 const OrderService = require('../services/OrderSevice.js'); // Đảm bảo tên file đúng (OrderService.js)
-
+const Order = require('../models/OrderProduct'); 
 const createOrder = async (req, res) => {
     try {
         // Lấy các trường cần thiết từ req.body
@@ -67,15 +67,27 @@ const getAllOrders = async (req, res) => {
   };
 
   // Xóa đơn hàng theo ID
+
+
+;
+
   const deleteOrder = async (req, res) => {
     try {
       const orderId = req.params.orderId;
-      const order = await OrderService.deleteOrder(orderId);
-      return res.status(200).json({ status: "OK", message: "Xóa đơn hàng thành công", order });
+      const deletedOrder = await OrderService.deleteOrderService(orderId);
+  
+      if (!deletedOrder) {
+        return res.status(404).json({ status: 'ERR', message: 'Không tìm thấy đơn hàng' });
+      }
+  
+      res.status(200).json({ status: 'OK', message: 'Xoá đơn hàng thành công', deletedOrder });
     } catch (error) {
-      return res.status(500).json({ status: "ERR", message: error.message });
+      console.error(error);
+      res.status(500).json({ status: 'ERR', message: 'Lỗi server' });
     }
   };
+  
+
 
   const getOrderById = async (req, res) => {
     try {

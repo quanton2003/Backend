@@ -99,6 +99,11 @@ const getAllOrders = async () => {
       throw error;
     }
   };
+  const deleteOrderService = async (orderId) => {
+    const deletedOrder = await Order.findByIdAndDelete(orderId);
+    return deletedOrder;
+  };
+  
   const getOrderById = async (orderId) => {
     try {
       const order = await Order.findById(orderId)
@@ -109,4 +114,4 @@ const getAllOrders = async () => {
       throw error;
     }
   };
-module.exports = { createOrder,getAllOrders,getOrdersByUserId,getOrderById };
+module.exports = { createOrder,getAllOrders,getOrdersByUserId,getOrderById ,deleteOrderService};
