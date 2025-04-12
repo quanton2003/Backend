@@ -1,4 +1,3 @@
-// src/index.js
 const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
@@ -13,7 +12,12 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:3000', // ✅ Thay bằng origin frontend của bạn
+  credentials: true, // ✅ Cho phép gửi cookie, authorization headers, v.v.
+};
+
+app.use(cors(corsOptions)); // ✅ Sử dụng cấu hình corsOptions
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));

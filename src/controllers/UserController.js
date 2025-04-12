@@ -74,7 +74,7 @@ const loginUser = async (req, res) => {
             path: '/'
         });
 
-        return res.status(200).json(newResponse);
+        return res.status(200).json({...newResponse, refresh_token}); // Trả về response mà không có refresh_token
     } catch (e) {
         return res.status(500).json({
             status: 'ERR',
@@ -177,9 +177,9 @@ const refreshToken = async (req, res) => {
     console.log('🔍 Tất cả cookies nhận được:', req.cookies); // Kiểm tra cookies
 
     try {
-        const token = req.cookies.refresh_token;
+        const token = req.headers.token.split(' ')[1] // ✅ Đang lấy token từ header 'token'
         if (!token) {
-            return res.status(401).json({  // 🔥 Đổi từ 400 → 401 (Unauthorized)
+            return res.status(401).json({
                 status: 'ERR',
                 message: 'The token is required'
             });
