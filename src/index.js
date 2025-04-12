@@ -13,7 +13,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 const corsOptions = {
-  origin: 'https://font-end-bay.vercel.app', // ✅ Thay bằng origin frontend của bạn
+  origin: 'https://font-end-bay.vercel.font-nbst0pit0-quanton2003.vercel.app', // ✅ Thay bằng origin frontend của bạn
   credentials: true, // ✅ Cho phép gửi cookie, authorization headers, v.v.
 };
 
